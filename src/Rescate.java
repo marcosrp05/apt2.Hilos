@@ -1,5 +1,6 @@
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class Rescate implements Runnable {
 
@@ -12,11 +13,14 @@ public class Rescate implements Runnable {
 
     @Override
     public void run() {
-        Balsa acasta = new Balsa("Acasta", 1, 500, colaPrioridad);        // 0.5 s -> 500 ms
-        Balsa banff  = new Balsa("Banff", 2, 1000, colaPrioridad);        // 1 s -> 1000 ms
-        Balsa cadiz  = new Balsa("Cadiz", 3, 2000, colaPrioridad);        // 2 s -> 2000 ms
-        Balsa deimos = new Balsa("Deimos", 4, 4000, colaPrioridad);       // 4 s -> 4000 ms
-        Balsa exped  = new Balsa("Expedición", 5, 8000, colaPrioridad);   // 8 s -> 8000 ms
+
+        Semaphore mutex = new Semaphore(1);   // 🔒 Semáforo para la cola compartida
+
+        Balsa acasta = new Balsa("Acasta", 1, 500, colaPrioridad, mutex);
+        Balsa banff  = new Balsa("Banff", 2, 1000, colaPrioridad, mutex);
+        Balsa cadiz  = new Balsa("Cadiz", 3, 2000, colaPrioridad, mutex);
+        Balsa deimos = new Balsa("Deimos", 4, 4000, colaPrioridad, mutex);
+        Balsa exped  = new Balsa("Expedición", 5, 8000, colaPrioridad, mutex);
 
         acasta.start();
         banff.start();
